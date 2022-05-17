@@ -11,8 +11,11 @@ import java.util.List;
 @Repository
 public class UserDaoImp implements UserDao {
 
-   @Autowired
-   private SessionFactory sessionFactory;
+   private final SessionFactory sessionFactory;
+
+   public UserDaoImp(SessionFactory sessionFactory) {
+      this.sessionFactory = sessionFactory;
+   }
 
    @Override
    public void add(User user) {
@@ -32,7 +35,7 @@ public class UserDaoImp implements UserDao {
       String HQL="from User where car.model = :model and car.series = :series";
       TypedQuery<User> query = sessionFactory.getCurrentSession().createQuery(HQL);
       query.setParameter("model", model).setParameter("series", series);
-      User targetUser = query.getSingleResult();
+      User targetUser = query.setMaxResults(1).getSingleResult();
       return targetUser.getFirstName()+" "+targetUser.getLastName();
    }
 
